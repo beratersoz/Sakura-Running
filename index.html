@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sakura Runner 3D - Ultra Edition</title>
+    <title>Sakura Runner 3D - Detailed Edition</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
         body {
-            background-color: #0b0512;
+            background-color: #05020a;
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
@@ -41,7 +41,7 @@
             display: none;
         }
 
-        /* MOBİL DOKUNMATİK KONTROLLER (BÜYÜK) */
+        /* MOBİL DOKUNMATİK KONTROLLER */
         #mobile-controls {
             position: absolute;
             bottom: 30px;
@@ -54,7 +54,6 @@
             pointer-events: none;
         }
 
-        /* D-PAD / JOYSTICK ALANI */
         .dpad-container {
             display: grid;
             grid-template-columns: repeat(3, 75px);
@@ -64,8 +63,8 @@
         }
 
         .touch-btn {
-            background: rgba(255, 255, 255, 0.35);
-            border: 3px solid rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.6);
             border-radius: 18px;
             color: white;
             font-size: 32px;
@@ -73,7 +72,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
             user-select: none;
             -webkit-user-select: none;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
@@ -89,14 +88,13 @@
         #btn-down { grid-column: 2; grid-row: 3; }
         #btn-right { grid-column: 3; grid-row: 2; }
 
-        /* ZIPLAMA BUTONU */
         #btn-jump {
             width: 110px;
             height: 110px;
             border-radius: 50%;
             background: rgba(255, 82, 82, 0.75);
-            border: 4px solid #ff5252;
-            font-size: 22px;
+            border: 3px solid #ff5252;
+            font-size: 20px;
             font-weight: 900;
             box-shadow: 0 6px 20px rgba(255, 82, 82, 0.6);
             pointer-events: auto;
@@ -113,7 +111,7 @@
             transform: translate(-50%, -50%);
             width: 90%;
             max-width: 380px;
-            background: rgba(15, 8, 25, 0.94);
+            background: rgba(10, 5, 18, 0.95);
             padding: 20px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -307,11 +305,10 @@ let hasJacket = false;
 let level = 1;
 let currentSpeed = 0;
 
-/* --- %25 DAHA HIZLANDIRILMIŞ HAREKET AYARLARI --- */
-const baseSpeed = 0.15;       // Koşma hızı %25 daha artırıldı (Eski: 0.12)
-const strafeSpeed = 0.14;      // Sağa/Sola manevra hızı artırıldı
-const gravity = -0.018;        // Yerçekimi hıza göre dengelendi
-const jumpPower = 0.54;        // Zıplama gücü artırıldı
+const baseSpeed = 0.15;
+const strafeSpeed = 0.14;
+const gravity = -0.018;
+const jumpPower = 0.54;
 
 let playerX = 0;
 let playerY = 1.2;
@@ -327,16 +324,16 @@ let clouds = [];
 let backgroundMountains = [];
 
 const levelThemes = [
-    { bg: 0x1a0a2a, fog: 0x2d123e, platform: 0x2c1a4d, border: 0xff7924 },
-    { bg: 0x091e3a, fog: 0x103254, platform: 0x173a5e, border: 0xfbc531 },
-    { bg: 0x22092c, fog: 0x3d1245, platform: 0x481e54, border: 0xff5252 },
-    { bg: 0x052329, fog: 0x0a3c42, platform: 0x125159, border: 0x78e08f }
+    { bg: 0x12041c, fog: 0x220938, platform: 0x2c1a4d, border: 0xff7924 },
+    { bg: 0x031326, fog: 0x0a2540, platform: 0x173a5e, border: 0xfbc531 },
+    { bg: 0x1d0324, fog: 0x33093d, platform: 0x481e54, border: 0xff5252 },
+    { bg: 0x021a1f, fog: 0x073138, platform: 0x125159, border: 0x78e08f }
 ];
 
 function init3D() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(levelThemes[0].bg);
-    scene.fog = new THREE.FogExp2(levelThemes[0].fog, 0.012);
+    scene.fog = new THREE.FogExp2(levelThemes[0].fog, 0.015);
 
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -345,22 +342,26 @@ function init3D() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.35;
     document.body.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.HemisphereLight(0xffdfba, 0x221133, 0.8);
+    const ambientLight = new THREE.HemisphereLight(0xffbe98, 0x110826, 1.2);
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffa86b, 1.6);
+    const mainLight = new THREE.DirectionalLight(0xff9e59, 2.0);
     mainLight.position.set(20, 35, 15);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 1024;
     mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
 
-    const rimLight = new THREE.DirectionalLight(0x6495ed, 0.8);
+    const rimLight = new THREE.DirectionalLight(0x8a2be2, 1.5);
     rimLight.position.set(-20, 15, -20);
     scene.add(rimLight);
+
+    const cyanLight = new THREE.PointLight(0x00ffff, 1.2, 50);
+    cyanLight.position.set(10, 5, -10);
+    scene.add(cyanLight);
 
     createDetailedCharacter();
     positionCameraForMenu();
@@ -371,7 +372,6 @@ function init3D() {
 
     window.addEventListener('resize', onWindowResize);
 
-    // KLAVYEYLE KONTROL
     window.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
         if (key === 'w' || e.code === 'ArrowUp') keys.w = true;
@@ -399,7 +399,6 @@ function handleJump() {
     }
 }
 
-// MOBİL DOKUNMATİK BUTONLARI
 function setupTouchControls() {
     const bindTouch = (id, keyName) => {
         const btn = document.getElementById(id);
@@ -490,16 +489,16 @@ function buyJacket() {
 function createSkyClouds() {
     clouds.forEach(c => scene.remove(c));
     clouds = [];
-    const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffeef5, transparent: true, opacity: 0.75, roughness: 0.9 });
+    const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffeef5, transparent: true, opacity: 0.6, roughness: 0.8 });
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 35; i++) {
         const cloudGroup = new THREE.Group();
-        for (let j = 0; j < 5; j++) {
-            const puff = new THREE.Mesh(new THREE.DodecahedronGeometry(2 + Math.random() * 2, 1), cloudMat);
+        for (let j = 0; j < 6; j++) {
+            const puff = new THREE.Mesh(new THREE.DodecahedronGeometry(2.5 + Math.random() * 2, 1), cloudMat);
             puff.position.set((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 6);
             cloudGroup.add(puff);
         }
-        cloudGroup.position.set((Math.random() - 0.5) * 120, -5 - Math.random() * 12, -Math.random() * 160);
+        cloudGroup.position.set((Math.random() - 0.5) * 140, -4 - Math.random() * 12, -Math.random() * 180);
         scene.add(cloudGroup);
         clouds.push(cloudGroup);
     }
@@ -508,19 +507,19 @@ function createSkyClouds() {
 function createBackgroundDistants() {
     backgroundMountains.forEach(m => scene.remove(m));
     backgroundMountains = [];
-    const mountainMat = new THREE.MeshStandardMaterial({ color: 0x120924, roughness: 1.0 });
+    const mountainMat = new THREE.MeshStandardMaterial({ color: 0x0d0618, roughness: 1.0 });
 
-    for (let i = 0; i < 10; i++) {
-        const mountain = new THREE.Mesh(new THREE.ConeGeometry(15 + Math.random() * 20, 30 + Math.random() * 20, 5), mountainMat);
+    for (let i = 0; i < 12; i++) {
+        const mountain = new THREE.Mesh(new THREE.ConeGeometry(18 + Math.random() * 20, 35 + Math.random() * 20, 6), mountainMat);
         const side = i % 2 === 0 ? -1 : 1;
-        mountain.position.set(side * (45 + Math.random() * 30), -10, -30 - (i * 15));
+        mountain.position.set(side * (50 + Math.random() * 30), -12, -20 - (i * 15));
         scene.add(mountain);
         backgroundMountains.push(mountain);
     }
 }
 
 function positionCameraForMenu() {
-    camera.position.set(0, 1.3, 2.6);
+    camera.position.set(0, 1.2, 2.5);
     camera.lookAt(0, 1.0, 0);
 }
 
@@ -541,7 +540,7 @@ function startGame() {
     playerY = 1.2;
     velocityY = 0;
     playerGroup.position.set(playerX, playerY, 0);
-    playerGroup.rotation.y = 0;
+    playerGroup.rotation.y = Math.PI;
 
     updateUI();
     positionCameraForGame();
@@ -578,7 +577,7 @@ function respawn() {
     playerY = 1.2;
     velocityY = 0;
     playerGroup.position.set(playerX, playerY, 0);
-    playerGroup.rotation.y = 0;
+    playerGroup.rotation.y = Math.PI;
     positionCameraForGame();
     buildLevel();
 }
@@ -592,6 +591,7 @@ function goToMainMenu() {
     playerX = 0;
     playerY = 1.2;
     playerGroup.position.set(0, 1.2, 0);
+    playerGroup.rotation.y = Math.PI;
     updateUI();
 }
 
@@ -610,163 +610,163 @@ function createNameTag(name) {
     const texture = new THREE.CanvasTexture(canvas);
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture }));
     sprite.scale.set(0.7, 0.18, 1);
-    sprite.position.set(0, 1.75, 0);
+    sprite.position.set(0, 1.85, 0);
     return sprite;
 }
 
-/* TURUNCU GÖZLÜ GRİ KEDİ */
 function createGreyCat() {
     const catGroup = new THREE.Group();
-    const catMat = new THREE.MeshStandardMaterial({ color: 0x5a5a60, roughness: 0.6 });
-    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffa500 }); // TURUNCU GÖZLER
+    const catMat = new THREE.MeshStandardMaterial({ color: 0x4a4a50, roughness: 0.5 });
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff8c00 });
 
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.35, 12), catMat);
-    body.rotation.x = Math.PI / 2.5;
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.4, 16), catMat);
+    body.rotation.x = Math.PI / 2.3;
     catGroup.add(body);
 
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), catMat);
-    head.position.set(0, 0.22, 0.28);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 20, 20), catMat);
+    head.position.set(0, 0.2, 0.26);
     catGroup.add(head);
 
     for (let side of [-1, 1]) {
-        const ear = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.12, 4), catMat);
-        ear.position.set(side * 0.09, 0.38, 0.28);
+        const ear = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.1, 8), catMat);
+        ear.position.set(side * 0.08, 0.34, 0.26);
         catGroup.add(ear);
 
-        // TURUNCU PARLAK GÖZLER
-        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), eyeMat);
-        eye.position.set(side * 0.07, 0.25, 0.43);
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 12), eyeMat);
+        eye.position.set(side * 0.06, 0.22, 0.39);
         catGroup.add(eye);
     }
     return catGroup;
 }
 
-/* ULTRA DETAYLI ANİME KARAKTERİ */
 function createDetailedCharacter() {
     playerGroup = new THREE.Group();
     skinMeshes = [];
     hairMeshes = [];
 
-    const outfitMat = new THREE.MeshStandardMaterial({ color: outfitColor, roughness: 0.3 });
-    const skinMat = new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.5 });
-    const hairMat = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.7 });
+    const outfitMat = new THREE.MeshStandardMaterial({ color: outfitColor, roughness: 0.4 });
+    const skinMat = new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.6 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.5 });
 
-    // GOVDE / KIYAFET
-    outfitMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.15, 0.52, 16), outfitMat);
+    outfitMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 0.5, 24), outfitMat);
     outfitMesh.position.y = 0.65;
     playerGroup.add(outfitMesh);
 
-    // SIKI DÜĞMELER / YAKA
-    const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.04, 8, 16), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-    scarf.rotation.x = Math.PI / 2;
-    scarf.position.set(0, 0.9, 0);
-    playerGroup.add(scarf);
+    const collar = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.03, 12, 24), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    collar.rotation.x = Math.PI / 2;
+    collar.position.set(0, 0.88, 0);
+    playerGroup.add(collar);
 
-    // SIRT ÇANTASI
-    const backpack = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.3, 0.14), new THREE.MeshStandardMaterial({ color: 0x333333 }));
-    backpack.position.set(0, 0.68, -0.16);
-    playerGroup.add(backpack);
-
-    // CEKET
-    jacketMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.17, 0.54, 16), new THREE.MeshStandardMaterial({ color: 0x222f3e }));
+    jacketMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.15, 0.52, 24), new THREE.MeshStandardMaterial({ color: 0x1e272e }));
     jacketMesh.position.y = 0.65;
     jacketMesh.visible = false;
     playerGroup.add(jacketMesh);
 
-    // KAFA
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.185, 24, 24), skinMat);
-    head.position.y = 1.12;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 32, 32), skinMat);
+    head.position.y = 1.1;
     playerGroup.add(head);
     skinMeshes.push(head);
 
-    // YÜZ DETAYLARI (GÖZLER, KİRPİKLER, YANAKLAR)
-    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0984e3 });
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x2e86de });
     const pupilMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const lashMat = new THREE.MeshBasicMaterial({ color: 0x1e272e });
-    const blushMat = new THREE.MeshBasicMaterial({ color: 0xff7675, transparent: true, opacity: 0.6 });
 
     for (let side of [-1, 1]) {
-        // Göz Beyazı & İris
-        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.042, 12, 12), eyeMat);
-        eye.position.set(side * 0.065, 1.15, 0.16);
-        eye.scale.set(0.6, 1.2, 0.4);
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.032, 16, 16), eyeMat);
+        eye.position.set(side * 0.055, 1.12, 0.14);
+        eye.scale.set(0.6, 1.1, 0.3);
         playerGroup.add(eye);
 
-        // Göz İçi Parlama (Anime Etkisi)
-        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.015, 8, 8), pupilMat);
-        pupil.position.set(side * 0.062, 1.17, 0.18);
+        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 8), pupilMat);
+        pupil.position.set(side * 0.052, 1.14, 0.155);
         playerGroup.add(pupil);
-
-        // Kirpikler
-        const lash = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.012, 0.02), lashMat);
-        lash.position.set(side * 0.065, 1.2, 0.17);
-        playerGroup.add(lash);
-
-        // Yanak Allığı
-        const blush = new THREE.Mesh(new THREE.PlaneGeometry(0.045, 0.025), blushMat);
-        blush.position.set(side * 0.08, 1.08, 0.17);
-        blush.rotation.y = side * 0.3;
-        playerGroup.add(blush);
     }
 
-    // AĞIZ
-    const mouth = new THREE.Mesh(new THREE.RingGeometry(0.01, 0.02, 8, 1, 0, Math.PI), new THREE.MeshBasicMaterial({ color: 0xd63031, side: THREE.DoubleSide }));
-    mouth.position.set(0, 1.05, 0.18);
-    mouth.rotation.x = 0.2;
+    const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.005, 8, 16, Math.PI), new THREE.MeshBasicMaterial({ color: 0xc8d6e5 }));
+    mouth.position.set(0, 1.05, 0.15);
+    mouth.rotation.x = Math.PI / 2;
     playerGroup.add(mouth);
 
-    // ŞAPKA
+    // ==========================================
+    // SAÇ MODELİ: KAFANIN YUVARLAKLIĞIYLA TAM UYUMLU, DOĞAL VE PÜRÜZSÜZ
+    // ==========================================
+    const hairGroup = new THREE.Group();
+
+    // 1. Üst ve Arka Saç Kütlesi (Kafayı Tam Kavisli Olarak Kaplar)
+    const hairMain = new THREE.Mesh(
+        new THREE.SphereGeometry(0.168, 32, 32, 0, Math.PI * 2, 0, Math.PI / 1.45),
+        hairMat
+    );
+    hairMain.position.set(0, 1.105, -0.005);
+    hairGroup.add(hairMain);
+    hairMeshes.push(hairMain);
+
+    // 2. Arka Düz Uzantı (Sırta Doğru Kavisli ve Pürüzsüz Dökülen Saç)
+    const hairBack = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.165, 0.15, 0.38, 32, 1, false, Math.PI * 0.75, Math.PI * 1.5),
+        hairMat
+    );
+    hairBack.position.set(0, 0.94, -0.01);
+    hairGroup.add(hairBack);
+    hairMeshes.push(hairBack);
+
+    // 3. Yan Kavisli Saçlar (Şakakları ve Kulak Üstünü Kaplar)
+    const hairSideLeft = new THREE.Mesh(
+        new THREE.SphereGeometry(0.167, 16, 16, 0, Math.PI * 0.6, 0.5, Math.PI / 2),
+        hairMat
+    );
+    hairSideLeft.position.set(0, 1.08, 0);
+    hairSideLeft.rotation.z = -0.1;
+    hairGroup.add(hairSideLeft);
+    hairMeshes.push(hairSideLeft);
+
+    const hairSideRight = new THREE.Mesh(
+        new THREE.SphereGeometry(0.167, 16, 16, Math.PI * 0.4, Math.PI * 0.6, 0.5, Math.PI / 2),
+        hairMat
+    );
+    hairSideRight.position.set(0, 1.08, 0);
+    hairSideRight.rotation.z = 0.1;
+    hairGroup.add(hairSideRight);
+    hairMeshes.push(hairSideRight);
+
+    // 4. Ön Düz Kaküller (Kafanın Ön Oval Kavisini Takip Eder)
+    const bangs = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.169, 0.169, 0.08, 32, 1, true, -Math.PI * 0.35, Math.PI * 0.7),
+        hairMat
+    );
+    bangs.position.set(0, 1.19, 0.005);
+    hairGroup.add(bangs);
+    hairMeshes.push(bangs);
+
+    playerGroup.add(hairGroup);
+    // ==========================================
+
     const hatGroup = new THREE.Group();
-    const hatBase = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.14, 16), new THREE.MeshStandardMaterial({ color: 0xeb2f06 }));
-    hatBase.position.y = 1.25;
+    const hatBase = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.12, 20), new THREE.MeshStandardMaterial({ color: 0xeb2f06 }));
+    hatBase.position.y = 1.26;
     hatGroup.add(hatBase);
     hatMesh = hatGroup;
     hatMesh.visible = false;
     playerGroup.add(hatMesh);
 
-    // DETAYLI ANİME SAÇI (KÂKÜLLER VE HACİM)
-    const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.198, 24, 24, 0, Math.PI * 2, 0, Math.PI / 1.75), hairMat);
-    hairTop.position.set(0, 1.13, 0);
-    playerGroup.add(hairTop);
-    hairMeshes.push(hairTop);
-
-    // Ön Kâküller
-    for (let i = -2; i <= 2; i++) {
-        const bang = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.15, 5), hairMat);
-        bang.position.set(i * 0.038, 1.22, 0.15);
-        bang.rotation.x = 0.4;
-        bang.rotation.z = -i * 0.1;
-        playerGroup.add(bang);
-        hairMeshes.push(bang);
-    }
-
-    // Uzun Arka Saçlar
-    const longHair = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.08, 0.7, 12), hairMat);
-    longHair.position.set(0, 0.82, -0.14);
-    longHair.rotation.x = -0.2;
-    playerGroup.add(longHair);
-    hairMeshes.push(longHair);
-
-    // KOLLAR VE ELLER
     function buildArm(isLeft) {
         const armGroup = new THREE.Group();
         const side = isLeft ? -1 : 1;
-        const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.038, 0.26, 12), outfitMat);
-        upperArm.position.set(0, -0.13, 0);
+        
+        const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.032, 0.24, 16), outfitMat);
+        upperArm.position.set(0, -0.12, 0);
         armGroup.add(upperArm);
 
-        const lowerArm = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.032, 0.26, 12), skinMat);
-        lowerArm.position.set(0, -0.39, 0);
+        const lowerArm = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.026, 0.24, 16), skinMat);
+        lowerArm.position.set(0, -0.34, 0);
         armGroup.add(lowerArm);
         skinMeshes.push(lowerArm);
 
-        // EL / AVUÇ
-        const hand = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 10), skinMat);
-        hand.position.set(0, -0.52, 0);
+        const hand = new THREE.Mesh(new THREE.SphereGeometry(0.032, 12, 12), skinMat);
+        hand.position.set(0, -0.46, 0);
         armGroup.add(hand);
         skinMeshes.push(hand);
 
-        armGroup.position.set(side * 0.24, 0.86, 0);
+        armGroup.position.set(side * 0.2, 0.85, 0);
         return armGroup;
     }
 
@@ -775,30 +775,27 @@ function createDetailedCharacter() {
     playerGroup.add(leftArmGroup);
     playerGroup.add(rightArmGroup);
 
-    // BACAKLAR VE AYAKKABILAR
-    const legGeo = new THREE.CylinderGeometry(0.055, 0.048, 0.42, 12);
     const sockMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const shoeMat = new THREE.MeshStandardMaterial({ color: 0x0984e3 });
+    const shoeMat = new THREE.MeshStandardMaterial({ color: 0x2e86de });
 
     function buildLeg(isLeft) {
         const legGroup = new THREE.Group();
         const side = isLeft ? -1 : 1;
 
-        const leg = new THREE.Mesh(legGeo, outfitMat);
-        leg.position.y = -0.21;
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.038, 0.4, 16), outfitMat);
+        leg.position.y = -0.2;
         legGroup.add(leg);
 
-        // Çorap Detayı
-        const sock = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.12, 12), sockMat);
-        sock.position.y = -0.36;
+        const sock = new THREE.Mesh(new THREE.CylinderGeometry(0.039, 0.039, 0.1, 16), sockMat);
+        sock.position.y = -0.35;
         legGroup.add(sock);
 
-        // Ayakkabı Detayı
-        const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.08, 0.18), shoeMat);
-        shoe.position.set(0, -0.42, 0.04);
+        const shoe = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.05, 0.12, 16), shoeMat);
+        shoe.position.set(0, -0.42, 0.03);
+        shoe.scale.set(1, 0.7, 1.4);
         legGroup.add(shoe);
 
-        legGroup.position.set(side * 0.09, 0.42, 0);
+        legGroup.position.set(side * 0.08, 0.4, 0);
         return legGroup;
     }
 
@@ -809,6 +806,8 @@ function createDetailedCharacter() {
 
     playerGroup.add(createNameTag("MEVA"));
     playerGroup.position.set(playerX, playerY, 0);
+    playerGroup.rotation.y = Math.PI;
+
     scene.add(playerGroup);
 }
 
@@ -818,52 +817,81 @@ function setHair(color) { hairColor = color; hairMeshes.forEach(m => m.material.
 
 function create3DJapaneseSign(text, mainColorHex) {
     const signGroup = new THREE.Group();
-    const box = new THREE.Mesh(new THREE.BoxGeometry(0.25, 2.2, 1.1), new THREE.MeshStandardMaterial({ color: 0x0a0a10 }));
+    const box = new THREE.Mesh(new THREE.BoxGeometry(0.25, 2.4, 1.8), new THREE.MeshStandardMaterial({ color: 0x0a0a10 }));
     signGroup.add(box);
 
     const canvas = document.createElement('canvas');
-    canvas.width = 128; canvas.height = 256;
+    canvas.width = 256; canvas.height = 320;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#050508'; ctx.fillRect(0, 0, 128, 256);
-    ctx.strokeStyle = mainColorHex; ctx.lineWidth = 8;
-    ctx.strokeRect(6, 6, 116, 244);
+    ctx.fillStyle = '#050508'; ctx.fillRect(0, 0, 256, 320);
+    ctx.strokeStyle = mainColorHex; ctx.lineWidth = 10;
+    ctx.strokeRect(8, 8, 240, 304);
     ctx.fillStyle = mainColorHex; ctx.textAlign = 'center';
 
-    if (text === "RIP ARTHUR MORGAN") {
-        ctx.font = '900 20px sans-serif'; ctx.fillText("R.I.P.", 64, 50);
-        ctx.font = '900 18px sans-serif'; ctx.fillText("ARTHUR", 64, 110); ctx.fillText("MORGAN", 64, 170);
+    if (text === "MAL MEVA") {
+        ctx.font = '900 36px sans-serif';
+        ctx.fillText("MAL", 128, 120);
+        ctx.fillText("MEVA", 128, 200);
     } else {
-        ctx.font = '900 44px sans-serif';
-        for (let i = 0; i < text.length; i++) ctx.fillText(text[i], 64, 60 + (i * 50));
+        ctx.font = '900 28px sans-serif';
+        ctx.fillText("MEVA", 128, 90);
+        ctx.fillText("ÇIK", 128, 160);
+        ctx.fillText("OYUNDAN", 128, 230);
     }
 
-    const planeGeo = new THREE.PlaneGeometry(1.05, 2.15);
+    const planeGeo = new THREE.PlaneGeometry(1.7, 2.3);
     const neonMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas) });
+    
     const planeLeft = new THREE.Mesh(planeGeo, neonMat);
     planeLeft.position.x = 0.13; planeLeft.rotation.y = Math.PI / 2;
     signGroup.add(planeLeft);
 
+    const planeRight = new THREE.Mesh(planeGeo, neonMat);
+    planeRight.position.x = -0.13; planeRight.rotation.y = -Math.PI / 2;
+    signGroup.add(planeRight);
+
     return signGroup;
 }
 
-function createJapaneseHouse(x, y, z, isLeft, forceArthurSign) {
+function createJapaneseHouse(x, y, z, isLeft, signText) {
     const group = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.BoxGeometry(4.8, 4.2, 5.8), new THREE.MeshStandardMaterial({ color: 0x241811 }));
+    
+    // Ev Gövdesi
+    const body = new THREE.Mesh(new THREE.BoxGeometry(5.2, 4.5, 6.2), new THREE.MeshStandardMaterial({ color: 0x1a1220, roughness: 0.7 }));
     group.add(body);
 
-    const roof = new THREE.Mesh(new THREE.ConeGeometry(4.5, 2.0, 4), new THREE.MeshStandardMaterial({ color: 0x191e24 }));
-    roof.position.y = 3.0; roof.rotation.y = Math.PI / 4;
+    // Çatı
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(4.8, 2.2, 4), new THREE.MeshStandardMaterial({ color: 0x0f131a }));
+    roof.position.y = 3.2; roof.rotation.y = Math.PI / 4;
     group.add(roof);
 
+    // Pencereler ve Neon Detaylar
+    const windowMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+    for(let side of [-1.5, 1.5]) {
+        const win = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.2), windowMat);
+        win.position.set(isLeft ? 2.61 : -2.61, 0.8, side);
+        win.rotation.y = isLeft ? Math.PI / 2 : -Math.PI / 2;
+        group.add(win);
+    }
+
+    // Çatı Üstü Kedi
     const cat = createGreyCat();
-    cat.position.set(0, 4.0, 0);
+    cat.position.set(0, 4.3, 0);
     group.add(cat);
 
-    const sign = create3DJapaneseSign(forceArthurSign ? "RIP ARTHUR MORGAN" : "寿司", forceArthurSign ? "#ff2222" : "#ff0055");
-    sign.position.set(isLeft ? 2.5 : -2.5, 0.5, 0);
+    // Tabela
+    const isMalMeva = signText === "MAL MEVA";
+    const signColor = isMalMeva ? "#ff0000" : "#00ffff";
+    const sign = create3DJapaneseSign(signText, signColor);
+    sign.position.set(isLeft ? 2.7 : -2.7, 0.8, 0);
     group.add(sign);
 
-    group.position.set(x, y + 2.1, z);
+    // Tabela Işık Efekti
+    const signLight = new THREE.PointLight(isMalMeva ? 0xff0000 : 0x00ffff, 2.0, 8);
+    signLight.position.set(isLeft ? 3.5 : -3.5, 0.8, 0);
+    group.add(signLight);
+
+    group.position.set(x, y + 2.25, z);
     scene.add(group);
     sceneryBuildings.push({ group, z });
 }
@@ -877,15 +905,35 @@ function createPlatform(x, y, z, width, depth, theme) {
     border.position.set(x, y + 0.225, z);
     scene.add(border);
 
+    if (Math.random() > 0.4) {
+        const lampGroup = new THREE.Group();
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.5), new THREE.MeshStandardMaterial({ color: 0x333333 }));
+        pole.position.y = 1.25;
+        lampGroup.add(pole);
+
+        const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), new THREE.MeshBasicMaterial({ color: theme.border }));
+        bulb.position.y = 2.5;
+        lampGroup.add(bulb);
+
+        const light = new THREE.PointLight(theme.border, 1.5, 6);
+        light.position.y = 2.5;
+        lampGroup.add(light);
+
+        const side = Math.random() > 0.5 ? (width / 2 - 0.2) : -(width / 2 - 0.2);
+        lampGroup.position.set(x + side, y + 0.225, z);
+        scene.add(lampGroup);
+        platforms.push({ mesh: lampGroup, border: null, width: 0, depth: 0, x: 0, y: 0, z: z });
+    }
+
     platforms.push({ mesh, border, width, depth, x, y, z });
 }
 
 function createSushi(x, y, z) {
     const group = new THREE.Group();
-    const rice = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.22, 0.62), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    const rice = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.22, 16), new THREE.MeshStandardMaterial({ color: 0xffffff }));
     group.add(rice);
-    const salmon = new THREE.Mesh(new THREE.BoxGeometry(0.39, 0.12, 0.66), new THREE.MeshStandardMaterial({ color: 0xff4757 }));
-    salmon.position.y = 0.15;
+    const salmon = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.1, 16), new THREE.MeshStandardMaterial({ color: 0xff4757 }));
+    salmon.position.y = 0.12;
     group.add(salmon);
 
     group.position.set(x, y, z);
@@ -894,7 +942,7 @@ function createSushi(x, y, z) {
 }
 
 function buildLevel() {
-    platforms.forEach(p => { scene.remove(p.mesh); scene.remove(p.border); });
+    platforms.forEach(p => { if (p.mesh) scene.remove(p.mesh); if (p.border) scene.remove(p.border); });
     sushis.forEach(s => scene.remove(s.group));
     sceneryBuildings.forEach(b => scene.remove(b.group));
 
@@ -903,7 +951,12 @@ function buildLevel() {
     scene.background.setHex(currentTheme.bg);
     scene.fog.color.setHex(currentTheme.fog);
 
+    const totalHouses = 30;
+    const malMevaIndex = Math.floor(Math.random() * totalHouses);
+
     let currentZ = 0;
+    let houseCounter = 0;
+
     for (let i = 0; i < 15; i++) {
         let pWidth = 4.5 + Math.random() * 1.5;
         let pDepth = 9 + Math.random() * 4;
@@ -911,8 +964,14 @@ function buildLevel() {
         let pX = (Math.random() - 0.5) * 1.5;
 
         createPlatform(pX, pY, currentZ, pWidth, pDepth, currentTheme);
-        createJapaneseHouse(-8.5 - Math.random() * 2, pY - 0.5, currentZ, true, i === 2);
-        createJapaneseHouse(8.5 + Math.random() * 2, pY - 0.5, currentZ, false, false);
+
+        const leftSignText = (houseCounter === malMevaIndex) ? "MAL MEVA" : "MEVA ÇIK OYUNDAN";
+        houseCounter++;
+        createJapaneseHouse(-8.5 - Math.random() * 2, pY - 0.5, currentZ, true, leftSignText);
+
+        const rightSignText = (houseCounter === malMevaIndex) ? "MAL MEVA" : "MEVA ÇIK OYUNDAN";
+        houseCounter++;
+        createJapaneseHouse(8.5 + Math.random() * 2, pY - 0.5, currentZ, false, rightSignText);
 
         if (Math.random() > 0.25) {
             createSushi(pX + (Math.random() - 0.5) * (pWidth - 1), pY + 0.6, currentZ - Math.random() * (pDepth / 2));
@@ -941,7 +1000,7 @@ function update() {
 
     isGrounded = false;
     platforms.forEach(p => {
-        if (Math.abs(playerGroup.position.z - p.z) < p.depth / 2 && Math.abs(playerX - p.x) < p.width / 2) {
+        if (p.depth > 0 && Math.abs(playerGroup.position.z - p.z) < p.depth / 2 && Math.abs(playerX - p.x) < p.width / 2) {
             if (playerY <= p.y + 0.42 && playerY >= p.y - 0.2) {
                 playerY = p.y + 0.42;
                 velocityY = 0;
@@ -954,7 +1013,7 @@ function update() {
         leftArmGroup.rotation.x = -Math.PI / 1.2;
         rightArmGroup.rotation.x = -Math.PI / 1.2;
     } else if (currentSpeed !== 0) {
-        const runTime = Date.now() * 0.025; // Hıza göre animasyon temposu artırıldı
+        const runTime = Date.now() * 0.025;
         leftArmGroup.rotation.x = Math.sin(runTime) * 0.95;
         rightArmGroup.rotation.x = -Math.sin(runTime) * 0.95;
         leftLegGroup.rotation.x = -Math.sin(runTime) * 0.85;
@@ -971,7 +1030,11 @@ function update() {
     camera.position.y = playerY + 1.8;
 
     if (currentSpeed !== 0) {
-        platforms.forEach(p => { p.z += currentSpeed; p.mesh.position.z = p.z; p.border.position.z = p.z; });
+        platforms.forEach(p => { 
+            p.z += currentSpeed; 
+            if (p.mesh) p.mesh.position.z = p.z; 
+            if (p.border) p.border.position.z = p.z; 
+        });
         sushis.forEach(s => {
             s.z += currentSpeed;
             s.group.position.z = s.z;
