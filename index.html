@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sakura Runner 3D - Fast Speed Edition</title>
+    <title>Sakura Runner 3D - Ultra Edition</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
         body {
@@ -307,11 +307,11 @@ let hasJacket = false;
 let level = 1;
 let currentSpeed = 0;
 
-/* --- HIZLANDIRILMIŞ HAREKET AYARLARI --- */
-const baseSpeed = 0.12;      // Temel koşma hızı artırıldı (Eski: 0.065)
-const strafeSpeed = 0.11;     // Sağa/Sola manevra hızı artırıldı (Eski: 0.055)
-const gravity = -0.016;       // Yerçekimi uyurlandı
-const jumpPower = 0.50;       // Zıplama gücü artırıldı (Eski: 0.42)
+/* --- %25 DAHA HIZLANDIRILMIŞ HAREKET AYARLARI --- */
+const baseSpeed = 0.15;       // Koşma hızı %25 daha artırıldı (Eski: 0.12)
+const strafeSpeed = 0.14;      // Sağa/Sola manevra hızı artırıldı
+const gravity = -0.018;        // Yerçekimi hıza göre dengelendi
+const jumpPower = 0.54;        // Zıplama gücü artırıldı
 
 let playerX = 0;
 let playerY = 1.2;
@@ -348,7 +348,7 @@ function init3D() {
     renderer.toneMappingExposure = 1.2;
     document.body.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.HemisphereLight(0xffdfba, 0x221133, 0.7);
+    const ambientLight = new THREE.HemisphereLight(0xffdfba, 0x221133, 0.8);
     scene.add(ambientLight);
 
     const mainLight = new THREE.DirectionalLight(0xffa86b, 1.6);
@@ -610,15 +610,15 @@ function createNameTag(name) {
     const texture = new THREE.CanvasTexture(canvas);
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture }));
     sprite.scale.set(0.7, 0.18, 1);
-    sprite.position.set(0, 1.65, 0);
+    sprite.position.set(0, 1.75, 0);
     return sprite;
 }
 
+/* TURUNCU GÖZLÜ GRİ KEDİ */
 function createGreyCat() {
     const catGroup = new THREE.Group();
     const catMat = new THREE.MeshStandardMaterial({ color: 0x5a5a60, roughness: 0.6 });
-    const innerEarMat = new THREE.MeshStandardMaterial({ color: 0xffb6c1 });
-    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x2ed573, roughness: 0.1 });
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffa500 }); // TURUNCU GÖZLER
 
     const body = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.35, 12), catMat);
     body.rotation.x = Math.PI / 2.5;
@@ -633,13 +633,15 @@ function createGreyCat() {
         ear.position.set(side * 0.09, 0.38, 0.28);
         catGroup.add(ear);
 
-        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 10), eyeMat);
+        // TURUNCU PARLAK GÖZLER
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), eyeMat);
         eye.position.set(side * 0.07, 0.25, 0.43);
         catGroup.add(eye);
     }
     return catGroup;
 }
 
+/* ULTRA DETAYLI ANİME KARAKTERİ */
 function createDetailedCharacter() {
     playerGroup = new THREE.Group();
     skinMeshes = [];
@@ -647,22 +649,73 @@ function createDetailedCharacter() {
 
     const outfitMat = new THREE.MeshStandardMaterial({ color: outfitColor, roughness: 0.3 });
     const skinMat = new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.5 });
-    const hairMat = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.8 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.7 });
 
+    // GOVDE / KIYAFET
     outfitMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.15, 0.52, 16), outfitMat);
     outfitMesh.position.y = 0.65;
     playerGroup.add(outfitMesh);
 
+    // SIKI DÜĞMELER / YAKA
+    const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.04, 8, 16), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    scarf.rotation.x = Math.PI / 2;
+    scarf.position.set(0, 0.9, 0);
+    playerGroup.add(scarf);
+
+    // SIRT ÇANTASI
+    const backpack = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.3, 0.14), new THREE.MeshStandardMaterial({ color: 0x333333 }));
+    backpack.position.set(0, 0.68, -0.16);
+    playerGroup.add(backpack);
+
+    // CEKET
     jacketMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.17, 0.54, 16), new THREE.MeshStandardMaterial({ color: 0x222f3e }));
     jacketMesh.position.y = 0.65;
     jacketMesh.visible = false;
     playerGroup.add(jacketMesh);
 
+    // KAFA
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.185, 24, 24), skinMat);
     head.position.y = 1.12;
     playerGroup.add(head);
     skinMeshes.push(head);
 
+    // YÜZ DETAYLARI (GÖZLER, KİRPİKLER, YANAKLAR)
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0984e3 });
+    const pupilMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const lashMat = new THREE.MeshBasicMaterial({ color: 0x1e272e });
+    const blushMat = new THREE.MeshBasicMaterial({ color: 0xff7675, transparent: true, opacity: 0.6 });
+
+    for (let side of [-1, 1]) {
+        // Göz Beyazı & İris
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.042, 12, 12), eyeMat);
+        eye.position.set(side * 0.065, 1.15, 0.16);
+        eye.scale.set(0.6, 1.2, 0.4);
+        playerGroup.add(eye);
+
+        // Göz İçi Parlama (Anime Etkisi)
+        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.015, 8, 8), pupilMat);
+        pupil.position.set(side * 0.062, 1.17, 0.18);
+        playerGroup.add(pupil);
+
+        // Kirpikler
+        const lash = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.012, 0.02), lashMat);
+        lash.position.set(side * 0.065, 1.2, 0.17);
+        playerGroup.add(lash);
+
+        // Yanak Allığı
+        const blush = new THREE.Mesh(new THREE.PlaneGeometry(0.045, 0.025), blushMat);
+        blush.position.set(side * 0.08, 1.08, 0.17);
+        blush.rotation.y = side * 0.3;
+        playerGroup.add(blush);
+    }
+
+    // AĞIZ
+    const mouth = new THREE.Mesh(new THREE.RingGeometry(0.01, 0.02, 8, 1, 0, Math.PI), new THREE.MeshBasicMaterial({ color: 0xd63031, side: THREE.DoubleSide }));
+    mouth.position.set(0, 1.05, 0.18);
+    mouth.rotation.x = 0.2;
+    playerGroup.add(mouth);
+
+    // ŞAPKA
     const hatGroup = new THREE.Group();
     const hatBase = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.14, 16), new THREE.MeshStandardMaterial({ color: 0xeb2f06 }));
     hatBase.position.y = 1.25;
@@ -671,27 +724,48 @@ function createDetailedCharacter() {
     hatMesh.visible = false;
     playerGroup.add(hatMesh);
 
+    // DETAYLI ANİME SAÇI (KÂKÜLLER VE HACİM)
     const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.198, 24, 24, 0, Math.PI * 2, 0, Math.PI / 1.75), hairMat);
     hairTop.position.set(0, 1.13, 0);
     playerGroup.add(hairTop);
     hairMeshes.push(hairTop);
 
-    const longHair = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.1, 0.65, 12), hairMat);
-    longHair.position.set(0, 0.8, -0.15);
-    longHair.rotation.x = -0.15;
+    // Ön Kâküller
+    for (let i = -2; i <= 2; i++) {
+        const bang = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.15, 5), hairMat);
+        bang.position.set(i * 0.038, 1.22, 0.15);
+        bang.rotation.x = 0.4;
+        bang.rotation.z = -i * 0.1;
+        playerGroup.add(bang);
+        hairMeshes.push(bang);
+    }
+
+    // Uzun Arka Saçlar
+    const longHair = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.08, 0.7, 12), hairMat);
+    longHair.position.set(0, 0.82, -0.14);
+    longHair.rotation.x = -0.2;
     playerGroup.add(longHair);
     hairMeshes.push(longHair);
 
+    // KOLLAR VE ELLER
     function buildArm(isLeft) {
         const armGroup = new THREE.Group();
         const side = isLeft ? -1 : 1;
         const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.038, 0.26, 12), outfitMat);
         upperArm.position.set(0, -0.13, 0);
         armGroup.add(upperArm);
+
         const lowerArm = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.032, 0.26, 12), skinMat);
         lowerArm.position.set(0, -0.39, 0);
         armGroup.add(lowerArm);
         skinMeshes.push(lowerArm);
+
+        // EL / AVUÇ
+        const hand = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 10), skinMat);
+        hand.position.set(0, -0.52, 0);
+        armGroup.add(hand);
+        skinMeshes.push(hand);
+
         armGroup.position.set(side * 0.24, 0.86, 0);
         return armGroup;
     }
@@ -701,13 +775,36 @@ function createDetailedCharacter() {
     playerGroup.add(leftArmGroup);
     playerGroup.add(rightArmGroup);
 
-    const legGeo = new THREE.CylinderGeometry(0.06, 0.05, 0.42, 12);
-    leftLegGroup = new THREE.Mesh(legGeo, outfitMat);
-    leftLegGroup.position.set(-0.09, 0.21, 0);
-    playerGroup.add(leftLegGroup);
+    // BACAKLAR VE AYAKKABILAR
+    const legGeo = new THREE.CylinderGeometry(0.055, 0.048, 0.42, 12);
+    const sockMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const shoeMat = new THREE.MeshStandardMaterial({ color: 0x0984e3 });
 
-    rightLegGroup = new THREE.Mesh(legGeo, outfitMat);
-    rightLegGroup.position.set(0.09, 0.21, 0);
+    function buildLeg(isLeft) {
+        const legGroup = new THREE.Group();
+        const side = isLeft ? -1 : 1;
+
+        const leg = new THREE.Mesh(legGeo, outfitMat);
+        leg.position.y = -0.21;
+        legGroup.add(leg);
+
+        // Çorap Detayı
+        const sock = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.12, 12), sockMat);
+        sock.position.y = -0.36;
+        legGroup.add(sock);
+
+        // Ayakkabı Detayı
+        const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.08, 0.18), shoeMat);
+        shoe.position.set(0, -0.42, 0.04);
+        legGroup.add(shoe);
+
+        legGroup.position.set(side * 0.09, 0.42, 0);
+        return legGroup;
+    }
+
+    leftLegGroup = buildLeg(true);
+    rightLegGroup = buildLeg(false);
+    playerGroup.add(leftLegGroup);
     playerGroup.add(rightLegGroup);
 
     playerGroup.add(createNameTag("MEVA"));
@@ -809,7 +906,7 @@ function buildLevel() {
     let currentZ = 0;
     for (let i = 0; i < 15; i++) {
         let pWidth = 4.5 + Math.random() * 1.5;
-        let pDepth = 8 + Math.random() * 4;
+        let pDepth = 9 + Math.random() * 4;
         let pY = 0;
         let pX = (Math.random() - 0.5) * 1.5;
 
@@ -821,19 +918,19 @@ function buildLevel() {
             createSushi(pX + (Math.random() - 0.5) * (pWidth - 1), pY + 0.6, currentZ - Math.random() * (pDepth / 2));
         }
 
-        currentZ -= (pDepth + 2.0 + Math.random() * 1.5);
+        currentZ -= (pDepth + 2.2 + Math.random() * 1.5);
     }
 }
 
 function update() {
     if (gameState === 'MAIN_MENU' || gameState === 'CUSTOMIZE') {
-        if (playerGroup) playerGroup.rotation.y += 0.01;
+        if (playerGroup) playerGroup.rotation.y += 0.012;
         return;
     }
     if (gameState === 'GAME_OVER') return;
 
-    if (keys.w) currentSpeed = baseSpeed + (level * 0.003);
-    else if (keys.s) currentSpeed = -(baseSpeed + (level * 0.003));
+    if (keys.w) currentSpeed = baseSpeed + (level * 0.004);
+    else if (keys.s) currentSpeed = -(baseSpeed + (level * 0.004));
     else currentSpeed = 0;
 
     if (keys.a && playerX > -4) playerX -= strafeSpeed;
@@ -857,11 +954,11 @@ function update() {
         leftArmGroup.rotation.x = -Math.PI / 1.2;
         rightArmGroup.rotation.x = -Math.PI / 1.2;
     } else if (currentSpeed !== 0) {
-        const runTime = Date.now() * 0.02; // Koşma animasyonu hızlandırıldı
-        leftArmGroup.rotation.x = Math.sin(runTime) * 0.8;
-        rightArmGroup.rotation.x = -Math.sin(runTime) * 0.8;
-        leftLegGroup.rotation.x = -Math.sin(runTime) * 0.7;
-        rightLegGroup.rotation.x = Math.sin(runTime) * 0.7;
+        const runTime = Date.now() * 0.025; // Hıza göre animasyon temposu artırıldı
+        leftArmGroup.rotation.x = Math.sin(runTime) * 0.95;
+        rightArmGroup.rotation.x = -Math.sin(runTime) * 0.95;
+        leftLegGroup.rotation.x = -Math.sin(runTime) * 0.85;
+        rightLegGroup.rotation.x = Math.sin(runTime) * 0.85;
     } else {
         leftArmGroup.rotation.x = 0; rightArmGroup.rotation.x = 0;
         leftLegGroup.rotation.x = 0; rightLegGroup.rotation.x = 0;
@@ -878,9 +975,9 @@ function update() {
         sushis.forEach(s => {
             s.z += currentSpeed;
             s.group.position.z = s.z;
-            s.group.rotation.y += 0.03;
+            s.group.rotation.y += 0.04;
 
-            if (!s.collected && Math.abs(playerX - s.x) < 0.7 && Math.abs(playerGroup.position.z - s.z) < 0.7 && Math.abs(playerY - s.y) < 0.9) {
+            if (!s.collected && Math.abs(playerX - s.x) < 0.75 && Math.abs(playerGroup.position.z - s.z) < 0.75 && Math.abs(playerY - s.y) < 0.9) {
                 s.collected = true;
                 scene.remove(s.group);
                 currentSessionSushi++;
