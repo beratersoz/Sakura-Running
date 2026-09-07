@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sakura Runner 3D - Mobile Compatible</title>
+    <title>Sakura Runner 3D - Fast Speed Edition</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
         body {
@@ -41,7 +41,7 @@
             display: none;
         }
 
-        /* MOBİL DOKUNMATİK KONTROLLER (BÜYÜTÜLDÜ) */
+        /* MOBİL DOKUNMATİK KONTROLLER (BÜYÜK) */
         #mobile-controls {
             position: absolute;
             bottom: 30px;
@@ -89,7 +89,7 @@
         #btn-down { grid-column: 2; grid-row: 3; }
         #btn-right { grid-column: 3; grid-row: 2; }
 
-        /* ZIPLAMA BUTONU (BÜYÜTÜLDÜ) */
+        /* ZIPLAMA BUTONU */
         #btn-jump {
             width: 110px;
             height: 110px;
@@ -306,13 +306,16 @@ let hasJacket = false;
 
 let level = 1;
 let currentSpeed = 0;
-const baseSpeed = 0.065; 
+
+/* --- HIZLANDIRILMIŞ HAREKET AYARLARI --- */
+const baseSpeed = 0.12;      // Temel koşma hızı artırıldı (Eski: 0.065)
+const strafeSpeed = 0.11;     // Sağa/Sola manevra hızı artırıldı (Eski: 0.055)
+const gravity = -0.016;       // Yerçekimi uyurlandı
+const jumpPower = 0.50;       // Zıplama gücü artırıldı (Eski: 0.42)
 
 let playerX = 0;
 let playerY = 1.2;
 let velocityY = 0;
-const gravity = -0.012;
-const jumpPower = 0.42; 
 let isGrounded = true;
 
 const keys = { w: false, s: false, a: false, d: false };
@@ -806,7 +809,7 @@ function buildLevel() {
     let currentZ = 0;
     for (let i = 0; i < 15; i++) {
         let pWidth = 4.5 + Math.random() * 1.5;
-        let pDepth = 7 + Math.random() * 3;
+        let pDepth = 8 + Math.random() * 4;
         let pY = 0;
         let pX = (Math.random() - 0.5) * 1.5;
 
@@ -818,7 +821,7 @@ function buildLevel() {
             createSushi(pX + (Math.random() - 0.5) * (pWidth - 1), pY + 0.6, currentZ - Math.random() * (pDepth / 2));
         }
 
-        currentZ -= (pDepth + 1.8 + Math.random() * 1.2);
+        currentZ -= (pDepth + 2.0 + Math.random() * 1.5);
     }
 }
 
@@ -829,12 +832,12 @@ function update() {
     }
     if (gameState === 'GAME_OVER') return;
 
-    if (keys.w) currentSpeed = baseSpeed + (level * 0.002);
-    else if (keys.s) currentSpeed = -(baseSpeed + (level * 0.002));
+    if (keys.w) currentSpeed = baseSpeed + (level * 0.003);
+    else if (keys.s) currentSpeed = -(baseSpeed + (level * 0.003));
     else currentSpeed = 0;
 
-    if (keys.a && playerX > -4) playerX -= 0.055;
-    if (keys.d && playerX < 4) playerX += 0.055;
+    if (keys.a && playerX > -4) playerX -= strafeSpeed;
+    if (keys.d && playerX < 4) playerX += strafeSpeed;
 
     velocityY += gravity;
     playerY += velocityY;
@@ -854,7 +857,7 @@ function update() {
         leftArmGroup.rotation.x = -Math.PI / 1.2;
         rightArmGroup.rotation.x = -Math.PI / 1.2;
     } else if (currentSpeed !== 0) {
-        const runTime = Date.now() * 0.011;
+        const runTime = Date.now() * 0.02; // Koşma animasyonu hızlandırıldı
         leftArmGroup.rotation.x = Math.sin(runTime) * 0.8;
         rightArmGroup.rotation.x = -Math.sin(runTime) * 0.8;
         leftLegGroup.rotation.x = -Math.sin(runTime) * 0.7;
@@ -875,9 +878,9 @@ function update() {
         sushis.forEach(s => {
             s.z += currentSpeed;
             s.group.position.z = s.z;
-            s.group.rotation.y += 0.02;
+            s.group.rotation.y += 0.03;
 
-            if (!s.collected && Math.abs(playerX - s.x) < 0.6 && Math.abs(playerGroup.position.z - s.z) < 0.6 && Math.abs(playerY - s.y) < 0.8) {
+            if (!s.collected && Math.abs(playerX - s.x) < 0.7 && Math.abs(playerGroup.position.z - s.z) < 0.7 && Math.abs(playerY - s.y) < 0.9) {
                 s.collected = true;
                 scene.remove(s.group);
                 currentSessionSushi++;
